@@ -1,0 +1,26 @@
+@charset "ISO-8859-1";
+#chat {
+    width: 300px;
+    margin: 0 auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+#chat-window {
+    height: 300px;
+    border: 1px solid #ccc;
+    overflow-y: scroll;
+    margin-bottom: 10px;
+}
+
+#output {
+    padding: 10px;
+}
+
+#message {
+    width: calc(100% - 70px);
+}
+
+#send {
+    width: 50px;
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body>
+
+	<div id="chat">
+		<div id="chat-window">
+			<div id="output"></div>
+		</div>
+		<input id="message" type="text" placeholder="Enter your message" />
+		<button id="send" onclick="sendMessage()">Send</button>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+
+	<script>
+
+		let stompClient = null;
+
+		function connect() {
+			const socket = new SockJS('/chat');
+			stompClient = Stomp.over(socket);
+			stompClient.connect({}, function (frame) {
+				console.log('Connected: ' + frame);
+				stompClient.subscribe('/topic/public', function (messageOutput) {
+					showMessageOutput(JSON.parse(messageOutput.body));
+				});
+			});
+		}
+
+		function sendMessage() {
+			const messageContent = document.querySelector('#message').value.trim();
+			if (messageContent && stompClient) {
+				const chatMessage = {
+					content: messageContent,
+					sender: 'Anonymous' // or get the sender's username
+				};
+				stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+				document.querySelector('#message').value = '';
+			}
+		}
+
+		function showMessageOutput(messageOutput) {
+			const messageElement = document.createElement('div');
+			messageElement.innerText = messageOutput.sender + ": " + messageOutput.content;
+			document.querySelector('#output').appendChild(messageElement);
+		}
+		connect();
+	</script>
+</body>
+
+</html>
